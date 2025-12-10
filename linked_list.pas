@@ -3,7 +3,9 @@ program LinkedListDemo;
 type
   PNode = ^TNode;
   TNode = record
-    data: Integer;
+    title: string;
+    author: string;
+    rating: Real;
     next: PNode;
   end;
 
@@ -12,12 +14,14 @@ begin
   head := nil;
 end;
 
-procedure Insert(var head: PNode; val: Integer);
+procedure InsertBook(var head: PNode; t, a: string; r: Real);
 var
   node, cur: PNode;
 begin
   New(node);
-  node^.data := val;
+  node^.title := t;
+  node^.author := a;
+  node^.rating := r;
   node^.next := nil;
   if head = nil then
     head := node
@@ -30,7 +34,7 @@ begin
   end;
 end;
 
-function Delete(var head: PNode; val: Integer): Boolean;
+function DeleteBook(var head: PNode; t: string): Boolean;
 var
   cur, prev: PNode;
 begin
@@ -38,7 +42,7 @@ begin
   prev := nil;
   while cur <> nil do
   begin
-    if cur^.data = val then
+    if cur^.title = t then
     begin
       if prev = nil then
         head := cur^.next
@@ -50,25 +54,29 @@ begin
     prev := cur;
     cur := cur^.next;
   end;
-  Delete := False;
+  DeleteBook := False;
 end;
 
-procedure Traverse(head: PNode);
+procedure TraverseBooks(head: PNode);
 var
   cur: PNode;
-  first: Boolean;
+  i: Integer;
 begin
-  Write('[');
   cur := head;
-  first := True;
+  i := 1;
+  if cur = nil then
+  begin
+    Writeln('(no books in the list)');
+    Exit;
+  end;
   while cur <> nil do
   begin
-    if not first then Write(', ');
-    Write(cur^.data);
-    first := False;
+    Write(i); Write('. '); Write(cur^.title); Write(' by '); Write(cur^.author); Write(' - Rating: ');
+    Write(cur^.rating:0:1);
+    Writeln;
     cur := cur^.next;
+    i := i + 1;
   end;
-  Writeln(']');
 end;
 
 var
@@ -76,18 +84,27 @@ var
 
 begin
   CreateList(head);
-  Insert(head, 1);
-  Insert(head, 2);
-  Insert(head, 3);
-  Write('After create: ');
-  Traverse(head);
-  Insert(head, 4);
-  Write('After insert 4: ');
-  Traverse(head);
-  if Delete(head, 2) then
-    Writeln('Deleted 2: yes')
+
+  { sample books }
+  InsertBook(head, 'The Hobbit', 'J.R.R. Tolkien', 4.8);
+  InsertBook(head, '1984', 'George Orwell', 4.6);
+  InsertBook(head, 'To Kill a Mockingbird', 'Harper Lee', 4.7);
+
+  Writeln('Books after create:');
+  TraverseBooks(head);
+
+  InsertBook(head, 'Dune', 'Frank Herbert', 4.5);
+  Writeln;
+  Writeln('After inserting ''Dune'':');
+  TraverseBooks(head);
+
+  if DeleteBook(head, '1984') then
+    Writeln;
+    Writeln('Deleted ''1984'': yes')
   else
-    Writeln('Deleted 2: no');
-  Write('Final list: ');
-  Traverse(head);
+    Writeln('Deleted ''1984'': no');
+
+  Writeln;
+  Writeln('Final list:');
+  TraverseBooks(head);
 end.
